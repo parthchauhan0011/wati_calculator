@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What WhatsApp will actually cost you — Wati estimator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Public+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1F1A;
+    --ink-soft:#3D544C;
+    --muted:#6B7A73;
+    --paper:#EDF1EC;
+    --card:#FFFFFF;
+    --rule:#CBD6CF;
+    --rule-soft:#E2E9E3;
+    --teal:#17796B;
+    --saffron:#C9631A;
+    --indigo:#3A4BA0;
+    --flag:#B23A2E;
+    --shadow:0 1px 0 rgba(14,31,26,.06), 0 12px 32px -22px rgba(14,31,26,.45);
+    --display:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;
+    --body:"Public Sans",system-ui,-apple-system,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+    font-size:16px;line-height:1.5;font-weight:400;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.022em;margin:0;line-height:1.05}
+  a{color:var(--teal);text-decoration-thickness:1px;text-underline-offset:2px}
+  a:focus-visible{outline:2px solid var(--saffron);outline-offset:2px;border-radius:2px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* ---------- masthead ---------- */
+  .masthead{padding:52px 0 26px}
+  .eyebrow{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--teal);display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px
+  }
+  .eyebrow span.dot{width:5px;height:5px;border-radius:50%;background:var(--saffron);display:inline-block}
+  .masthead h1{font-size:clamp(2.1rem,5.4vw,3.9rem);max-width:20ch}
+  .masthead h1 em{font-style:normal;color:var(--teal)}
+  .lede{margin:18px 0 0;max-width:58ch;color:var(--ink-soft);font-size:1.05rem}
+  .controls{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap;align-items:center}
+  .billing-switch{display:flex;border:1px solid var(--ink);border-radius:2px;width:max-content;overflow:hidden;background:var(--card)}
+  .billing-switch button{
+    font-family:var(--mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase;
+    padding:9px 16px;border:0;background:transparent;color:var(--ink-soft);cursor:pointer
+  }
+  .billing-switch button[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .billing-switch button:focus-visible{outline:2px solid var(--saffron);outline-offset:-2px}
+  .countrypick{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--rule);border-radius:2px;padding:6px 10px}
+  .countrypick label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .countrypick select{
+    font-family:var(--body);font-size:.9rem;border:0;background:transparent;color:var(--ink);
+    padding:2px 0;max-width:190px;cursor:pointer
+  }
+  .countrypick select:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
+
+  /* ---------- layout ---------- */
+  .split{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:44px;align-items:start;padding-bottom:64px}
+  @media (max-width:960px){ .split{grid-template-columns:minmax(0,1fr);gap:32px} }
+
+  /* ---------- form blocks ---------- */
+  .block{border-top:1px solid var(--rule);padding:26px 0 30px}
+  .block:first-child{border-top:0;padding-top:6px}
+  .block-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .block-key{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+  .block h2{font-size:1.32rem}
+  .block-note{color:var(--muted);font-size:.9rem;margin:8px 0 20px;max-width:62ch}
+  .block-note a{color:var(--teal)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{
+    font-family:var(--body);font-size:.9rem;padding:9px 15px;border:1px solid var(--rule);
+    background:var(--card);border-radius:999px;cursor:pointer;color:var(--ink-soft);transition:.14s
+  }
+  .chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff}
+  .chip:hover{border-color:var(--teal)}
+  .chip:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
+
+  .field{margin-bottom:24px}
+  .field:last-child{margin-bottom:0}
+  .field-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:9px}
+  .field-label{font-weight:500;font-size:.98rem;display:flex;align-items:center;gap:9px}
+  .field-label.stack{flex-direction:column;align-items:flex-start;gap:0;max-width:46ch}
+  .swatch{width:9px;height:9px;border-radius:2px;flex:none}
+  .sw-mkt{background:var(--saffron)} .sw-util{background:var(--teal)} .sw-auth{background:var(--indigo)}
+  .field-hint{color:var(--muted);font-size:.82rem;font-weight:400;margin-top:3px;display:block}
+  .numbox{
+    font-family:var(--mono);font-size:.95rem;width:118px;padding:7px 10px;text-align:right;
+    border:1px solid var(--rule);border-radius:2px;background:var(--card);color:var(--ink)
+  }
+  .numbox.narrow{width:82px}
+  .numbox:focus-visible{outline:2px solid var(--saffron);outline-offset:-1px;border-color:var(--ink)}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--rule);border-radius:2px}
+  input[type=range]::-moz-range-track{height:3px;background:var(--rule);border-radius:2px}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:19px;height:19px;border-radius:50%;
+    background:var(--card);border:2px solid var(--ink);margin-top:-8px;box-shadow:0 1px 3px rgba(14,31,26,.25)
+  }
+  input[type=range]::-moz-range-thumb{width:19px;height:19px;border-radius:50%;background:var(--card);border:2px solid var(--ink)}
+  input[type=range]:focus-visible::-webkit-slider-thumb{outline:2px solid var(--saffron);outline-offset:2px}
+  input[type=range].r-mkt::-webkit-slider-thumb{border-color:var(--saffron)}
+  input[type=range].r-util::-webkit-slider-thumb{border-color:var(--teal)}
+  input[type=range].r-auth::-webkit-slider-thumb{border-color:var(--indigo)}
+  .scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:2px}
+
+  .checkline{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--rule-soft)}
+  .checkline:last-of-type{border-bottom:0}
+  .checkline input[type=checkbox]{margin:4px 0 0;width:16px;height:16px;accent-color:var(--teal);flex:none}
+  .checkline label{font-size:.94rem}
+  .checkline .field-hint{margin-top:2px}
+
+  .freebox{background:var(--card);border:1px solid var(--rule-soft);border-left:3px solid var(--teal);border-radius:2px;padding:15px 17px;margin:18px 0 4px}
+  .freebox h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);font-weight:600}
+  .freebox ul{margin:10px 0 0;padding-left:17px;font-size:.87rem;color:var(--ink-soft)}
+  .freebox li{margin-bottom:5px}
+  .freebox li:last-child{margin-bottom:0}
+
+  /* ---------- receipt ---------- */
+  .receipt-col{position:sticky;top:22px}
+  @media (max-width:960px){ .receipt-col{position:static} }
+  .receipt{background:var(--card);border:1px solid var(--ink);box-shadow:var(--shadow);border-radius:3px}
+  .receipt-head{padding:20px 22px 16px;border-bottom:1px dashed var(--rule)}
+  .receipt-head .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .receipt-head h2{font-size:1.5rem;margin-top:7px}
+  .verdict{margin-top:11px;font-size:.88rem;color:var(--ink-soft)}
+  .verdict strong{color:var(--teal)}
+  .lines{padding:6px 22px 4px;margin:0;list-style:none}
+  .grouphead{
+    font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);
+    padding:13px 0 5px;border-bottom:1px solid var(--rule-soft)
+  }
+  .grouphead:first-child{padding-top:6px}
+  .line{display:grid;grid-template-columns:1fr auto;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule-soft);align-items:baseline}
+  .line-name{font-size:.92rem}
+  .line-sub{display:block;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.01em}
+  .line-amt{font-family:var(--mono);font-size:.95rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .line.is-buried .line-name::after{content:"°";color:var(--flag);font-family:var(--mono);font-weight:600;margin-left:5px}
+  .line.is-free .line-amt{color:var(--teal)}
+  .subtot{display:grid;grid-template-columns:1fr auto;gap:12px;padding:9px 0 12px;font-size:.86rem;color:var(--ink-soft);border-bottom:1px solid var(--rule-soft)}
+  .subtot .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--ink)}
+  .footnote{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.02em;padding:4px 22px 14px;line-height:1.5}
+  .footnote b{color:var(--flag);font-weight:600}
+  .totals{padding:14px 22px 20px;border-top:1px dashed var(--rule);background:#FAFCFA}
+  .grand{display:flex;justify-content:space-between;align-items:baseline;padding-top:2px}
+  .grand .l{font-family:var(--display);font-weight:700;font-size:1.02rem}
+  .grand .l small{display:block;font-family:var(--mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+  .grand .v{font-family:var(--display);font-weight:800;font-size:2rem;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .grand .v.pulse{animation:pop .28s ease-out}
+  @keyframes pop{from{transform:translateY(-3px);opacity:.55}to{transform:none;opacity:1}}
+  .composition{display:flex;height:7px;border-radius:2px;overflow:hidden;margin:16px 0 9px;background:var(--rule-soft)}
+  .composition i{display:block;height:100%;transition:width .2s ease}
+  .comp-legend{display:flex;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+  .comp-legend b{color:var(--ink);font-weight:500}
+  .comp-legend i{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:5px}
+  .unitcost{font-family:var(--mono);font-size:11px;color:var(--muted);padding:12px 22px 18px;border-top:1px solid var(--rule-soft);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .unitcost b{color:var(--ink);font-weight:500}
+  .receipt-actions{display:flex;gap:9px;padding:0 22px 20px}
+  .btn{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
+    padding:10px 13px;border:1px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer;border-radius:2px;flex:1
+  }
+  .btn:hover{background:var(--ink);color:#fff}
+  .btn:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
+  .btn.primary{background:var(--ink);color:#fff}
+  .btn.primary:hover{background:var(--teal);border-color:var(--teal)}
+
+  /* ---------- plan comparison ---------- */
+  .section{border-top:2px solid var(--ink);padding:38px 0 10px}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+  .section h2{font-size:clamp(1.5rem,3vw,2.1rem);max-width:24ch}
+  .section-head p{margin:0;max-width:44ch;color:var(--muted);font-size:.9rem}
+  .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  @media (max-width:820px){ .plans{grid-template-columns:1fr} }
+  .plan{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:20px;display:flex;flex-direction:column;gap:12px}
+  .plan.best{border-color:var(--ink);border-width:2px;padding:19px}
+  .plan.out{background:transparent;border-style:dashed;color:var(--muted)}
+  .plan-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .plan h3{font-size:1.24rem}
+  .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:2px;background:var(--ink);color:#fff;white-space:nowrap}
+  .tag.na{background:transparent;border:1px solid var(--flag);color:var(--flag)}
+  .plan-total{font-family:var(--display);font-weight:800;font-size:1.85rem;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .plan-total small{display:block;font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+  .plan-facts{margin:0;padding:11px 0 0;list-style:none;font-size:.86rem;color:var(--ink-soft);border-top:1px solid var(--rule-soft)}
+  .plan-facts li{padding:3.5px 0;display:flex;gap:8px}
+  .plan-facts li::before{content:"—";color:var(--muted);flex:none}
+  .plan-why{font-size:.85rem;color:var(--flag);margin:0}
+
+  /* ---------- rate card / settings ---------- */
+  .ratecard{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:32px;align-items:start}
+  @media (max-width:880px){ .ratecard{grid-template-columns:1fr} }
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--rule-soft)}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--rule)}
+  td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .rateinput{font-family:var(--mono);font-size:.85rem;width:94px;text-align:right;padding:5px 7px;border:1px solid var(--rule);border-radius:2px;background:var(--card);color:var(--ink)}
+  .rateinput:focus-visible{outline:2px solid var(--saffron);outline-offset:-1px}
+  .tablecap{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  .panel{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:20px}
+  .panel h3{font-size:1.05rem;margin-bottom:6px}
+  .panel p{font-size:.86rem;color:var(--muted);margin:0 0 16px}
+  .drop{border:1.5px dashed var(--rule);border-radius:3px;padding:22px 16px;text-align:center;font-size:.88rem;color:var(--ink-soft);background:#FAFCFA;transition:.15s}
+  .drop.over{border-color:var(--teal);background:#F1F8F5}
+  .drop code{font-family:var(--mono);font-size:11px;background:var(--paper);padding:1px 5px;border-radius:2px}
+  .drop input[type=file]{display:block;margin:12px auto 0;font-size:.82rem;max-width:100%}
+  .status{font-family:var(--mono);font-size:11.5px;margin-top:12px;padding:9px 11px;border-radius:2px;display:none;line-height:1.45;white-space:pre-wrap}
+  .status.ok{display:block;background:#EDF7F1;color:#14624F;border:1px solid #BEDFCE}
+  .status.err{display:block;background:#FBEEEC;color:#8E2A20;border:1px solid #E8C4BE}
+  .csvspec{font-family:var(--mono);font-size:11px;white-space:pre;overflow-x:auto;background:var(--ink);color:#D6E4DC;padding:13px;border-radius:2px;margin:14px 0 0}
+  .assumption{font-size:.84rem;color:var(--muted);border-top:1px solid var(--rule);margin-top:34px;padding:22px 0 60px;max-width:84ch}
+  .assumption b{color:var(--ink-soft);font-weight:500}
+  .assumption ol{padding-left:18px;margin:10px 0 0}
+  .assumption li{margin-bottom:7px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  .mobilebar{display:none}
+  @media (max-width:960px){
+    body{padding-bottom:66px}
+    .mobilebar{
+      display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;
+      justify-content:space-between;align-items:center;gap:14px;
+      background:var(--ink);color:#fff;padding:12px 20px;box-shadow:0 -8px 24px -18px rgba(14,31,26,.9)
+    }
+    .mobilebar .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9DBCB0}
+    .mobilebar .l b{display:block;font-family:var(--body);font-size:.95rem;letter-spacing:0;text-transform:none;color:#fff;font-weight:500;margin-top:2px}
+    .mobilebar .v{font-family:var(--display);font-weight:800;font-size:1.4rem;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  }
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+  @media print{
+    body{background:#fff;padding:0}
+    .split{grid-template-columns:1fr}
+    .receipt-actions,.controls,.drop,.mobilebar{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap masthead">
+  <div class="eyebrow">
+    <span>WhatsApp Business API</span><span class="dot"></span><span>Wati rate card, 1 July 2026</span><span class="dot"></span><span>Nothing behind an icon</span>
+  </div>
+  <h1>Work out what WhatsApp <em>actually</em> costs you each month.</h1>
+  <p class="lede">Answer five questions about how you'll use it. The bill on the right itemises itself as you go — plan fee, seats, add-ons, and every message category at its real per-message rate.</p>
+  <div class="controls">
+    <div class="billing-switch" role="group" aria-label="Billing cycle">
+      <button type="button" id="cycleAnnual" aria-pressed="true">Billed annually</button>
+      <button type="button" id="cycleMonthly" aria-pressed="false">Billed monthly</button>
+    </div>
+    <div class="countrypick">
+      <label for="country">Messaging customers in</label>
+      <select id="country"></select>
+    </div>
+  </div>
+</header>
+
+<main class="wrap split">
+  <!-- ============ FORM ============ -->
+  <form id="form" novalidate>
+
+    <section class="block">
+      <div class="block-head"><span class="block-key">Question 1</span><h2>What are you using WhatsApp for?</h2></div>
+      <p class="block-note">This sets sensible starting volumes and tells us which features you'll need. Every number stays editable afterwards.</p>
+      <div class="chips" role="group" aria-label="Primary use case">
+        <button type="button" class="chip" data-usecase="marketing" aria-pressed="false">Promotions and campaigns</button>
+        <button type="button" class="chip" data-usecase="support" aria-pressed="false">Customer support</button>
+        <button type="button" class="chip" data-usecase="orders" aria-pressed="false">Order and delivery updates</button>
+        <button type="button" class="chip" data-usecase="otp" aria-pressed="false">Logins and OTPs</button>
+        <button type="button" class="chip" data-usecase="mixed" aria-pressed="true">A mix of all of it</button>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><span class="block-key">Question 2</span><h2>How many messages will you send a month?</h2></div>
+      <p class="block-note">WhatsApp charges per delivered message by category, not per contact. Split your monthly outflow across the three categories that cost money. Reaching 15,000 people with a promo and 10,000 with order updates is 15,000 marketing and 10,000 utility.</p>
+
+      <div class="field">
+        <div class="field-top">
+          <span class="field-label"><i class="swatch sw-mkt"></i>Marketing<span class="sr"> messages per month</span></span>
+          <input class="numbox" type="number" id="mktNum" min="0" max="2000000" step="100" value="15000" aria-label="Marketing messages per month">
+        </div>
+        <input class="r-mkt" type="range" id="mktRange" min="0" max="100000" step="250" value="15000" aria-label="Marketing messages slider">
+        <div class="scale"><span>0</span><span>50,000</span><span>1,00,000+</span></div>
+        <span class="field-hint">Offers, launches, re-engagement, abandoned cart — anything promotional. The most expensive category by a wide margin, and the only one whose rate changes between plans.</span>
+      </div>
+
+      <div class="field">
+        <div class="field-top">
+          <span class="field-label"><i class="swatch sw-util"></i>Utility</span>
+          <input class="numbox" type="number" id="utilNum" min="0" max="2000000" step="100" value="10000" aria-label="Utility messages per month">
+        </div>
+        <input class="r-util" type="range" id="utilRange" min="0" max="100000" step="250" value="10000" aria-label="Utility messages slider">
+        <div class="scale"><span>0</span><span>50,000</span><span>1,00,000+</span></div>
+        <span class="field-hint">Order confirmed, shipped, out for delivery, payment received, appointment reminders — anything tied to a transaction the customer already made.</span>
+      </div>
+
+      <div class="field">
+        <div class="field-top">
+          <span class="field-label"><i class="swatch sw-auth"></i>Authentication</span>
+          <input class="numbox" type="number" id="authNum" min="0" max="2000000" step="100" value="0" aria-label="Authentication messages per month">
+        </div>
+        <input class="r-auth" type="range" id="authRange" min="0" max="50000" step="100" value="0" aria-label="Authentication messages slider">
+        <div class="scale"><span>0</span><span>25,000</span><span>50,000+</span></div>
+        <span class="field-hint">One-time passwords and login codes only. Priced the same as utility.</span>
+      </div>
+
+      <div class="field">
+        <div class="field-top">
+          <span class="field-label stack">Utility messages sent as a reply within 24 hours of the customer writing in
+            <span class="field-hint">These land inside the free service window and cost nothing. Support-led teams can push this high; pure broadcast teams should leave it at 0.</span>
+          </span>
+          <input class="numbox narrow" type="number" id="freeWindow" min="0" max="100" step="5" value="0" aria-label="Percentage of utility messages inside the free service window">
+        </div>
+        <input type="range" id="freeWindowRange" min="0" max="100" step="5" value="0" aria-label="Free service window slider">
+        <div class="scale"><span>0%</span><span>50%</span><span>100%</span></div>
+      </div>
+
+      <div class="freebox">
+        <h3>What you're never charged for</h3>
+        <ul>
+          <li><b>Service conversations.</b> A customer writes in, you reply — free on Growth, Pro and Business alike.</li>
+          <li><b>Click-to-WhatsApp ad conversations.</b> Chats opened from a CTWA ad are free.</li>
+          <li><b>Utility replies inside the 24-hour service window.</b> Set by the slider above.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><span class="block-key">Question 3</span><h2>How many people need a login?</h2></div>
+      <p class="block-note">Everyone answering chats from the shared inbox needs a seat — support, sales, ops. This is where the plans stop being interchangeable: Growth is hard-capped at 3 users and cannot be topped up at any price.</p>
+      <div class="field">
+        <div class="field-top">
+          <span class="field-label">Team members with Wati access</span>
+          <input class="numbox narrow" type="number" id="agentsNum" min="1" max="200" step="1" value="3" aria-label="Number of users">
+        </div>
+        <input type="range" id="agentsRange" min="1" max="40" step="1" value="3" aria-label="Number of users slider">
+        <div class="scale"><span>1</span><span>20</span><span>40+</span></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><span class="block-key">Question 4</span><h2>How much of it runs on autopilot?</h2></div>
+      <p class="block-note">An automation trigger is counted every time an automation you've set up fires for a customer — a chatbot, keyword action, default action, reply material, routing rule, sequence or WhatsApp Flow. Run out mid-month and automations stop until you buy more, so your team answers by hand. On current plans the Automation Triggers add-on covers chatbot sessions and keyword actions together, so there's no separate chatbot-session purchase. <a href="https://support.wati.io/en/articles/11462996-understanding-automation-triggers-and-their-cost" target="_blank" rel="noopener">How triggers are counted and charged →</a></p>
+      <div class="field">
+        <div class="field-top">
+          <span class="field-label stack">Automation triggers a month
+            <span class="field-hint">Rough guide: one per customer who starts an automated chat, plus one for each automated follow-up. Manual and API-initiated actions don't count.</span>
+          </span>
+          <input class="numbox" type="number" id="trigNum" min="0" max="500000" step="100" value="2000" aria-label="Automation triggers per month">
+        </div>
+        <input type="range" id="trigRange" min="0" max="30000" step="100" value="2000" aria-label="Automation triggers slider">
+        <div class="scale"><span>0</span><span>15,000</span><span>30,000+</span></div>
+      </div>
+      <div class="field">
+        <div class="field-top">
+          <span class="field-label stack">AI Co-pilot credits a month
+            <span class="field-hint">Consumed by Wati's AI writing and summarising features. Leave at 0 if your team won't use them. Included free: 250 on Growth, 500 on Pro, 1,500 on Business.</span>
+          </span>
+          <input class="numbox" type="number" id="aiNum" min="0" max="100000" step="50" value="0" aria-label="AI Co-pilot credits per month">
+        </div>
+        <input type="range" id="aiRange" min="0" max="10000" step="50" value="0" aria-label="AI Co-pilot credits slider">
+        <div class="scale"><span>0</span><span>5,000</span><span>10,000+</span></div>
+      </div>
+      <div class="checkline">
+        <input type="checkbox" id="needAdvanced">
+        <div><label for="needAdvanced">I need advanced chatbots, forms, CTWA click tracking or AI agents</label>
+        <span class="field-hint">Growth handles keyword-level rules only. Ticking this rules it out.</span></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head"><span class="block-key">Question 5</span><h2>Anything else attached?</h2></div>
+      <div class="checkline">
+        <input type="checkbox" id="needShopify">
+        <div><label for="needShopify">Connect Shopify</label>
+        <span class="field-hint">Required for abandoned-cart recovery, COD confirmation and automated order updates. Billed in USD at $4.99 a month, separately from the plan.</span></div>
+      </div>
+      <div class="checkline">
+        <input type="checkbox" id="needMulti">
+        <div><label for="needMulti">Run more than one WhatsApp number</label>
+        <span class="field-hint">Separate numbers for, say, sales and support. Only the Business plan supports this.</span></div>
+      </div>
+      <div class="field" id="extraNumWrap" style="margin-top:16px;display:none">
+        <div class="field-top">
+          <span class="field-label">Extra numbers beyond the first</span>
+          <input class="numbox narrow" type="number" id="extraNumbers" min="0" max="20" step="1" value="1" aria-label="Additional WhatsApp numbers">
+        </div>
+      </div>
+    </section>
+  </form>
+
+  <!-- ============ RECEIPT ============ -->
+  <aside class="receipt-col" aria-label="Cost estimate">
+    <div class="receipt">
+      <div class="receipt-head">
+        <div class="kicker">Estimated monthly cost</div>
+        <h2 id="planName">Wati Pro</h2>
+        <p class="verdict" id="verdict"></p>
+      </div>
+      <div class="lines" id="lines"></div>
+      <p class="footnote" id="footnote"><b>°</b> Not priced on the plan card — you have to open the rate card or a help article to find it.</p>
+      <div class="totals">
+        <div class="grand">
+          <span class="l">Total per month<small id="cycleLabel">plan billed annually</small></span>
+          <span class="v" id="grand">—</span>
+        </div>
+        <div class="composition" id="comp" role="img" aria-label="Cost composition">
+          <i style="background:var(--ink)"></i><i style="background:var(--saffron)"></i><i style="background:var(--teal)"></i><i style="background:var(--indigo)"></i>
+        </div>
+        <div class="comp-legend" id="compLegend"></div>
+      </div>
+      <div class="unitcost">
+        <span>Blended <b id="blended">—</b> / message</span>
+        <span>Yearly <b id="yearly">—</b></span>
+      </div>
+      <div class="receipt-actions">
+        <button type="button" class="btn primary" id="copyBtn">Copy estimate</button>
+        <button type="button" class="btn" id="printBtn">Print / PDF</button>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- ============ ALL THREE PLANS ============ -->
+<section class="wrap section">
+  <div class="section-head">
+    <h2>The same requirements, priced on all three plans</h2>
+    <p>A cheaper plan isn't a cheaper bill once seats, trigger top-ups and per-plan message rates are counted. Here's the full monthly cost of each, with your numbers.</p>
+  </div>
+  <div class="plans" id="plans"></div>
+</section>
+
+<!-- ============ RATE CARD ============ -->
+<section class="wrap section">
+  <div class="section-head">
+    <h2>The rate card, on the page</h2>
+    <p>These are the rates driving the estimate. Change the country above to reprice, edit any cell directly, or load a rate card as CSV.</p>
+  </div>
+  <div class="ratecard">
+    <div>
+      <p class="tablecap">Per-message rates — <span id="rateCountryLabel">India</span></p>
+      <table>
+        <thead>
+          <tr><th>Category</th><th class="num">Growth</th><th class="num">Pro</th><th class="num">Business</th><th class="num">Your volume</th></tr>
+        </thead>
+        <tbody id="rateBody"></tbody>
+      </table>
+
+      <p class="tablecap" style="margin-top:26px">Plan and add-on prices, per month in ₹</p>
+      <table>
+        <thead><tr><th>Line</th><th class="num">Annual cycle</th><th class="num">Monthly cycle</th></tr></thead>
+        <tbody id="planPriceBody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h3>Load a rate card</h3>
+      <p>Drop in a CSV and everything recalculates. Two shapes are accepted and you can mix them in one file.</p>
+      <div class="drop" id="drop">
+        Drop a <code>.csv</code> here, or pick a file
+        <input type="file" id="file" accept=".csv,text/csv">
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+      <pre class="csvspec">category,rate
+marketing,1.03572
+utility,0.14950
+authentication,0.14950
+
+key,value
+growth_marketing,1.03572
+pro_marketing,0.99257
+business_marketing,0.99257
+growth_annual,2199
+growth_monthly,2699
+pro_annual,4899
+pro_monthly,6499
+business_annual,14799
+business_monthly,18499
+pro_extra_seat,1299
+business_extra_seat,2199
+growth_triggers,1000
+pro_triggers,2000
+business_triggers,5000
+trigger_pack_price,1000
+ai_pack_price,1600
+shopify,440
+extra_number,2499</pre>
+      <p style="margin-top:14px">A bare <code>marketing</code> row sets that rate on all three plans. Unrecognised keys are reported back rather than silently dropped.</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap assumption">
+  <b>What's assumed here, so you can check it.</b>
+  <ol>
+    <li>Per-message rates come from the Wati Growth and Pro rate cards effective 1 July 2026. Marketing is the only category that differs between plans; utility and authentication are identical.</li>
+    <li><b>Business plan rates are a stand-in.</b> Wati publishes a separate Business rate card that wasn't supplied here, and Business also carries volume discounts above roughly a million messages a month. Business currently reuses Pro rates — load the Business card, or edit the Business column, before quoting that tier.</li>
+    <li>Plan prices are the listed Indian figures: Growth ₹2,199 annual / ₹2,699 monthly, Pro ₹4,899 / ₹6,499, Business ₹14,799 / ₹18,499. Extra users cost ₹1,299 on Pro and ₹2,199 on Business. Growth includes 3 users and takes no extras.</li>
+    <li>Growth's 15,000-broadcast monthly cap is checked against marketing plus utility volume. Authentication messages are API-triggered one-to-one and aren't treated as broadcasts. Pro and Business have no broadcast cap.</li>
+    <li>Included automation triggers: 1,000 on Growth, 2,000 on Pro, 5,000 on Business. Top-ups are ₹1,000 per 1,000 triggers and the estimate rounds up to whole blocks. Unused triggers don't roll over.</li>
+    <li>Included AI Co-pilot credits: 250 on Growth, 500 on Pro, 1,500 on Business. Top-ups are ₹1,600 per 1,000 credits.</li>
+    <li>Shopify is billed in USD at $4.99 a month; the ₹440 shown is an approximate conversion and moves with the exchange rate.</li>
+    <li>Message charges are drawn from a prepaid wallet, separate from the subscription invoice. Auto-recharge isn't available for rupee accounts, so the wallet needs topping up by hand.</li>
+    <li>Not included: Astra AI agents, which are priced separately; dedicated onboarding, technical account management and professional services, which are quoted case by case; green-tick verification; and the Blitz high-throughput add-on.</li>
+  </ol>
+</div>
+
+<div class="mobilebar" aria-hidden="true">
+  <span class="l">Estimated monthly<b id="mbPlan">Wati Pro</b></span>
+  <span class="v" id="mbTotal">—</span>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =======================================================================
+     Per-country per-message rates, in ₹, from the Wati rate cards
+     effective 1 July 2026.  g = Growth, p = Pro, each [marketing, utility,
+     authentication].  Business has its own published card which is not
+     included here, so Business reuses Pro rates until one is loaded.
+     ======================================================================= */
+  var COUNTRIES = {
+    IN:{n:"India",g:[1.03572,0.1495,0.1495],p:[0.99257,0.1495,0.1495]},
+    AE:{n:"United Arab Emirates",g:[4.39356,1.49617,1.49617],p:[4.2105,1.49617,1.49617]},
+    SA:{n:"Saudi Arabia",g:[4.39452,1.01842,1.01842],p:[4.21142,1.01842,1.01842]},
+    US:{n:"United States",g:[2.19756,0.32383,0.32383],p:[2.106,0.32383,0.32383]},
+    GB:{n:"United Kingdom",g:[5.57952,2.09586,2.09586],p:[5.34704,2.09586,2.09586]},
+    CA:{n:"Canada",g:[2.19756,0.32383,0.32383],p:[2.106,0.32383,0.32383]},
+    AU:{n:"Australia",g:[6.43968,1.07666,1.07666],p:[6.17136,1.07666,1.07666]},
+    SG:{n:"Singapore",g:[6.43968,1.52451,1.52451],p:[6.17136,1.52451,1.52451]},
+    MY:{n:"Malaysia",g:[7.56444,1.33406,1.33406],p:[7.24926,1.33406,1.33406]},
+    ID:{n:"Indonesia",g:[3.61332,2.38108,2.38108],p:[3.46277,2.38108,2.38108]},
+    DE:{n:"Germany",g:[12.00876,5.24186,5.24186],p:[11.5084,5.24186,5.24186]},
+    NL:{n:"Netherlands",g:[14.04936,4.76528,4.76528],p:[13.46397,4.76528,4.76528]},
+    FR:{n:"France",g:[7.5588,2.85922,2.85922],p:[7.24385,2.85922,2.85922]},
+    IT:{n:"Italy",g:[6.98472,2.85662,2.85662],p:[6.69369,2.85662,2.85662]},
+    ES:{n:"Spain",g:[6.21612,1.90424,1.90424],p:[5.95712,1.90424,1.90424]},
+    BR:{n:"Brazil",g:[5.49696,0.64792,0.64792],p:[5.26792,0.64792,0.64792]},
+    MX:{n:"Mexico",g:[2.68284,0.80938,0.80938],p:[2.57106,0.80938,0.80938]},
+    NG:{n:"Nigeria",g:[4.54212,0.63895,0.63895],p:[4.35287,0.63895,0.63895]},
+    ZA:{n:"South Africa",g:[3.33852,0.72527,0.72527],p:[3.19942,0.72527,0.72527]},
+    KE:{n:"Kenya",g:[1.97964,0.3809,0.3809],p:[1.89716,0.3809,0.3809]},
+    EG:{n:"Egypt",g:[5.66292,0.34307,0.34307],p:[5.42697,0.34307,0.34307]},
+    QA:{n:"Qatar",g:[2.99916,1.14257,1.14257],p:[2.8742,1.14257,1.14257]},
+    KW:{n:"Kuwait",g:[2.99916,0.86645,0.86645],p:[2.8742,0.86645,0.86645]},
+    OM:{n:"Oman",g:[2.99916,0.86645,0.86645],p:[2.8742,0.86645,0.86645]},
+    BH:{n:"Bahrain",g:[2.99916,0.86645,0.86645],p:[2.8742,0.86645,0.86645]},
+    IL:{n:"Israel",g:[3.10452,0.50505,0.50505],p:[2.97517,0.50505,0.50505]},
+    TR:{n:"Turkey",g:[0.95868,0.0858,0.0858],p:[0.91874,0.0858,0.0858]},
+    PH:{n:"Philippines",g:[6.43968,1.07666,1.07666],p:[6.17136,1.07666,1.07666]},
+    TH:{n:"Thailand",g:[6.43968,1.07666,1.07666],p:[6.17136,1.07666,1.07666]},
+    VN:{n:"Vietnam",g:[6.43968,1.07666,1.07666],p:[6.17136,1.07666,1.07666]},
+    LK:{n:"Sri Lanka",g:[6.43968,1.07666,1.07666],p:[6.17136,1.07666,1.07666]},
+    BD:{n:"Bangladesh",g:[6.43968,1.07666,1.07666],p:[6.17136,1.07666,1.07666]},
+    NP:{n:"Nepal",g:[6.43968,1.07666,1.07666],p:[6.17136,1.07666,1.07666]},
+    PK:{n:"Pakistan",g:[4.16196,0.95329,0.95329],p:[3.98855,0.95329,0.95329]},
+    JP:{n:"Japan",g:[6.43968,1.07666,1.07666],p:[6.17136,1.07666,1.07666]},
+    HK:{n:"Hong Kong",g:[6.43968,2.47728,2.47728],p:[6.17136,2.47728,2.47728]},
+    NZ:{n:"New Zealand",g:[6.43968,1.07666,1.07666],p:[6.17136,1.07666,1.07666]}
+  };
+
+  /* =======================================================================
+     CONFIG — every number the estimate depends on.  Editable in the UI,
+     or replaceable wholesale with a rate-card CSV.
+     ======================================================================= */
+  var CONFIG = {
+    country: "IN",
+    rates: {   // filled from COUNTRIES on load; ₹ per delivered message
+      growth:   { marketing:0, utility:0, authentication:0 },
+      pro:      { marketing:0, utility:0, authentication:0 },
+      business: { marketing:0, utility:0, authentication:0 }
+    },
+    plans: {
+      growth: {
+        label:"Growth", annual:2199, monthly:2699,
+        seats:3, extraSeat:null,        // null = seats cannot be added at all
+        triggers:1000, aiCredits:250, broadcastCap:15000,
+        advanced:false, multiNumber:false
+      },
+      pro: {
+        label:"Pro", annual:4899, monthly:6499,
+        seats:5, extraSeat:1299,
+        triggers:2000, aiCredits:500, broadcastCap:Infinity,
+        advanced:true, multiNumber:false
+      },
+      business: {
+        label:"Business", annual:14799, monthly:18499,
+        seats:5, extraSeat:2199,
+        triggers:5000, aiCredits:1500, broadcastCap:Infinity,
+        advanced:true, multiNumber:true
+      }
+    },
+    triggerPack: { size:1000, price:1000 },
+    aiPack:      { size:1000, price:1600 },
+    shopify: 440,          // $4.99/month, billed in USD
+    extraNumber: 2499
+  };
+
+  var PLAN_ORDER = ["growth","pro","business"];
+  var CATS = ["marketing","utility","authentication"];
+  var CAT_META = {
+    marketing:      { label:"Marketing messages",      colorVar:"--saffron" },
+    utility:        { label:"Utility messages",        colorVar:"--teal" },
+    authentication: { label:"Authentication messages", colorVar:"--indigo" }
+  };
+
+  var PRESETS = {
+    marketing: { mkt:20000, util:2000,  auth:0,     agents:3, trig:1500, advanced:false },
+    support:   { mkt:2000,  util:8000,  auth:0,     agents:8, trig:9000, advanced:true  },
+    orders:    { mkt:3000,  util:20000, auth:0,     agents:4, trig:6000, advanced:false },
+    otp:       { mkt:0,     util:2000,  auth:20000, agents:2, trig:1000, advanced:false },
+    mixed:     { mkt:15000, util:10000, auth:0,     agents:5, trig:4000, advanced:false }
+  };
+
+  var state = {
+    useCase:"mixed",
+    mkt:15000, util:10000, auth:0,
+    freeWindow:0,
+    agents:3,
+    triggers:2000,
+    aiCredits:0,
+    needAdvanced:false,
+    needShopify:false,
+    needMulti:false,
+    extraNumbers:1,
+    cycle:"annual"
+  };
+
+  /* ---------------------- formatting ---------------------- */
+  var inr0 = new Intl.NumberFormat("en-IN",{maximumFractionDigits:0});
+  var inr2 = new Intl.NumberFormat("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+  function money(n){ return "₹" + inr0.format(Math.round(n)); }
+  function moneyExact(n){ return "₹" + inr2.format(n); }
+  function count(n){ return inr0.format(n); }
+  function rateStr(r){
+    var s = r.toFixed(5).replace(/0+$/,"").replace(/\.$/,"");
+    return "₹" + s;
+  }
+  function $(id){ return document.getElementById(id); }
+
+  function applyCountry(iso){
+    var c = COUNTRIES[iso];
+    if (!c) return;
+    CONFIG.country = iso;
+    CATS.forEach(function(cat,i){
+      CONFIG.rates.growth[cat]   = c.g[i];
+      CONFIG.rates.pro[cat]      = c.p[i];
+      CONFIG.rates.business[cat] = c.p[i];   // no Business card supplied
+    });
+  }
+
+  /* ---------------------- the maths ---------------------- */
+  function billableVolumes(){
+    var freeUtility = Math.round(state.util * (state.freeWindow/100));
+    return {
+      marketing: state.mkt,
+      utility: state.util - freeUtility,
+      authentication: state.auth,
+      freeUtility: freeUtility,
+      total: state.mkt + state.util + state.auth
+    };
+  }
+
+  function estimate(planKey){
+    var plan = CONFIG.plans[planKey];
+    var rates = CONFIG.rates[planKey];
+    var vol = billableVolumes();
+    var subLines = [];   // subscription and add-ons
+    var msgLines = [];   // prepaid wallet
+    var reasons = [];
+
+    // -- eligibility
+    if (state.agents > plan.seats && plan.extraSeat === null){
+      reasons.push("Capped at " + plan.seats + " users with no way to add more — you need " + state.agents + ".");
+    }
+    // The broadcast cap applies to campaign sends. Authentication messages are
+    // API-triggered one-to-one, so they don't count towards it.
+    var broadcastVolume = state.mkt + state.util;
+    if (broadcastVolume > plan.broadcastCap){
+      reasons.push("Broadcasts are capped at " + count(plan.broadcastCap) + " a month; your marketing plus utility volume is " + count(broadcastVolume) + ".");
+    }
+    if (state.needAdvanced && !plan.advanced){
+      reasons.push("No advanced chatbots, forms or AI agents on this plan.");
+    }
+    if (state.needMulti && !plan.multiNumber){
+      reasons.push("Only one WhatsApp number allowed.");
+    }
+
+    // -- platform
+    var base = state.cycle === "annual" ? plan.annual : plan.monthly;
+    subLines.push({
+      name: plan.label + " plan",
+      sub: plan.seats + " users · " + count(plan.triggers) + " triggers · " + count(plan.aiCredits) + " AI credits",
+      amount: base
+    });
+
+    // -- seats
+    var extraSeats = Math.max(0, state.agents - plan.seats);
+    if (extraSeats > 0 && plan.extraSeat !== null){
+      subLines.push({
+        name: extraSeats + " extra " + (extraSeats === 1 ? "user" : "users"),
+        sub: count(extraSeats) + " × " + money(plan.extraSeat),
+        amount: extraSeats * plan.extraSeat,
+        buried: true
+      });
+    }
+
+    // -- automation triggers
+    var trigOver = Math.max(0, state.triggers - plan.triggers);
+    var trigPacks = Math.ceil(trigOver / CONFIG.triggerPack.size);
+    if (trigPacks > 0){
+      subLines.push({
+        name: "Extra automation triggers",
+        sub: trigPacks + " × " + count(CONFIG.triggerPack.size) + " at " + money(CONFIG.triggerPack.price),
+        amount: trigPacks * CONFIG.triggerPack.price,
+        buried: true
+      });
+    }
+
+    // -- AI co-pilot credits
+    var aiOver = Math.max(0, state.aiCredits - plan.aiCredits);
+    var aiPacks = Math.ceil(aiOver / CONFIG.aiPack.size);
+    if (aiPacks > 0){
+      subLines.push({
+        name: "Extra AI Co-pilot credits",
+        sub: aiPacks + " × " + count(CONFIG.aiPack.size) + " at " + money(CONFIG.aiPack.price),
+        amount: aiPacks * CONFIG.aiPack.price,
+        buried: true
+      });
+    }
+
+    // -- add-ons
+    if (state.needShopify){
+      subLines.push({ name:"Shopify integration", sub:"$4.99 a month, billed in USD", amount: CONFIG.shopify, buried:true });
+    }
+    if (state.needMulti && plan.multiNumber && state.extraNumbers > 0){
+      subLines.push({
+        name: state.extraNumbers + " extra WhatsApp " + (state.extraNumbers === 1 ? "number" : "numbers"),
+        sub: count(state.extraNumbers) + " × " + money(CONFIG.extraNumber),
+        amount: state.extraNumbers * CONFIG.extraNumber,
+        buried: true
+      });
+    }
+
+    // -- messages
+    CATS.forEach(function(cat){
+      var v = vol[cat];
+      if (!v) return;
+      msgLines.push({
+        name: CAT_META[cat].label,
+        sub: count(v) + " × " + rateStr(rates[cat]),
+        amount: v * rates[cat],
+        cat: cat,
+        buried: true
+      });
+    });
+    if (vol.freeUtility > 0){
+      msgLines.push({
+        name:"Utility inside the service window",
+        sub: count(vol.freeUtility) + " messages",
+        amount: 0, free:true
+      });
+    }
+
+    var subCost = subLines.reduce(function(s,l){ return s + l.amount; }, 0);
+    var msgCost = msgLines.reduce(function(s,l){ return s + l.amount; }, 0);
+
+    return {
+      key:planKey, plan:plan, rates:rates,
+      subLines:subLines, msgLines:msgLines, reasons:reasons,
+      eligible: reasons.length === 0,
+      subCost:subCost, msgCost:msgCost, total:subCost + msgCost,
+      platformCost:base,
+      seatCost: extraSeats * (plan.extraSeat || 0),
+      addonCost: subCost - base - extraSeats * (plan.extraSeat || 0),
+      volumes:vol, extraSeats:extraSeats, trigPacks:trigPacks, aiPacks:aiPacks
+    };
+  }
+
+  function recommend(all){
+    var eligible = PLAN_ORDER.map(function(k){ return all[k]; }).filter(function(e){ return e.eligible; });
+    if (eligible.length){
+      return eligible.sort(function(a,b){ return a.total - b.total; })[0];
+    }
+    return all.business;   // nothing qualifies outright; show the most capable
+  }
+
+  /* ---------------------- rendering ---------------------- */
+  var lastGrand = null;
+
+  function render(){
+    var all = {};
+    PLAN_ORDER.forEach(function(k){ all[k] = estimate(k); });
+    var pick = recommend(all);
+
+    $("planName").textContent = "Wati " + pick.plan.label;
+    $("verdict").innerHTML = verdictText(pick, all);
+
+    // ---- line items, grouped by how they're actually billed
+    var box = $("lines");
+    box.innerHTML = "";
+    addGroup(box, "Subscription — billed on your plan cycle", pick.subLines, pick.subCost, "Subscription subtotal");
+    addGroup(box, "Messages — drawn from your prepaid wallet", pick.msgLines, pick.msgCost, "Wallet subtotal");
+
+    $("footnote").style.display =
+      pick.subLines.concat(pick.msgLines).some(function(l){ return l.buried; }) ? "block" : "none";
+
+    // ---- total
+    var g = $("grand");
+    g.textContent = money(pick.total);
+    $("cycleLabel").textContent = state.cycle === "annual" ? "plan billed annually" : "plan billed monthly";
+    if (lastGrand !== null && Math.round(pick.total) !== lastGrand){
+      g.classList.remove("pulse"); void g.offsetWidth; g.classList.add("pulse");
+    }
+    lastGrand = Math.round(pick.total);
+    $("mbPlan").textContent = "Wati " + pick.plan.label;
+    $("mbTotal").textContent = money(pick.total);
+
+    // ---- composition
+    var mk = pick.volumes.marketing * pick.rates.marketing;
+    var ut = pick.volumes.utility * pick.rates.utility + pick.volumes.authentication * pick.rates.authentication;
+    var parts = [
+      { v: pick.platformCost,                    label:"Plan",           color:"var(--ink)" },
+      { v: mk,                                   label:"Marketing",      color:"var(--saffron)" },
+      { v: ut,                                   label:"Utility & OTP",  color:"var(--teal)" },
+      { v: pick.seatCost + Math.max(0,pick.addonCost), label:"Users & add-ons", color:"var(--indigo)" }
+    ];
+    var sum = parts.reduce(function(s,p){ return s+p.v; },0) || 1;
+    var bars = $("comp").children;
+    parts.forEach(function(p,i){
+      bars[i].style.width = (p.v/sum*100) + "%";
+      bars[i].style.background = p.color;
+    });
+    $("compLegend").innerHTML = parts.filter(function(p){ return p.v > 0; }).map(function(p){
+      return '<span><i style="background:'+p.color+'"></i>'+p.label+' <b>'+Math.round(p.v/sum*100)+'%</b></span>';
+    }).join("");
+
+    var totalMsgs = pick.volumes.total;
+    $("blended").textContent = totalMsgs ? moneyExact(pick.total/totalMsgs) : "—";
+    $("yearly").textContent = money(pick.total * 12);
+
+    renderPlans(all, pick);
+    renderRateTables(pick);
+    window.__pick = pick;
+  }
+
+  function addGroup(box, title, lines, subtotal, subtotalLabel){
+    if (!lines.length) return;
+    var h = document.createElement("div");
+    h.className = "grouphead";
+    h.textContent = title;
+    box.appendChild(h);
+    lines.forEach(function(l){
+      var row = document.createElement("div");
+      row.className = "line" + (l.buried ? " is-buried" : "") + (l.free ? " is-free" : "");
+      var n = document.createElement("span");
+      n.className = "line-name";
+      n.appendChild(document.createTextNode(l.name));
+      if (l.sub){
+        var s = document.createElement("span");
+        s.className = "line-sub";
+        s.textContent = l.sub;
+        n.appendChild(s);
+      }
+      var a = document.createElement("span");
+      a.className = "line-amt";
+      a.textContent = l.free ? "Free" : money(l.amount);
+      row.appendChild(n); row.appendChild(a);
+      box.appendChild(row);
+    });
+    var st = document.createElement("div");
+    st.className = "subtot";
+    st.innerHTML = '<span>' + subtotalLabel + '</span><span class="v">' + money(subtotal) + '</span>';
+    box.appendChild(st);
+  }
+
+  function verdictText(pick, all){
+    var bits = [];
+    if (!pick.eligible){
+      return "None of the standard plans covers this, so it needs a custom quote. Closest fit shown.";
+    }
+    bits.push("<strong>" + pick.plan.label + "</strong> is the cheapest plan that meets your requirements.");
+    var blocked = PLAN_ORDER.map(function(k){ return all[k]; }).filter(function(e){ return !e.eligible; });
+    if (blocked.length === 1){
+      bits.push(blocked[0].plan.label + " is out: " + blocked[0].reasons[0].charAt(0).toLowerCase() + blocked[0].reasons[0].slice(1));
+    } else if (blocked.length > 1){
+      bits.push(blocked.map(function(b){ return b.plan.label; }).join(" and ") + " don't qualify.");
+    }
+    if (pick.msgCost > pick.subCost && pick.total > 0){
+      bits.push("Messages are " + Math.round(pick.msgCost/pick.total*100) + "% of the cost — the subscription is the small part.");
+    }
+    return bits.join(" ");
+  }
+
+  function renderPlans(all, pick){
+    var wrap = $("plans");
+    wrap.innerHTML = "";
+    PLAN_ORDER.forEach(function(k){
+      var e = all[k];
+      var card = document.createElement("div");
+      card.className = "plan" + (e.key === pick.key ? " best" : "") + (e.eligible ? "" : " out");
+
+      var top = document.createElement("div");
+      top.className = "plan-top";
+      var h = document.createElement("h3"); h.textContent = e.plan.label;
+      top.appendChild(h);
+      if (e.key === pick.key && e.eligible){
+        var t = document.createElement("span"); t.className = "tag"; t.textContent = "Best fit"; top.appendChild(t);
+      } else if (!e.eligible){
+        var na = document.createElement("span"); na.className = "tag na"; na.textContent = "Doesn't fit"; top.appendChild(na);
+      }
+      card.appendChild(top);
+
+      var tot = document.createElement("div");
+      tot.className = "plan-total";
+      tot.innerHTML = money(e.total) + "<small>per month, all in</small>";
+      card.appendChild(tot);
+
+      var facts = document.createElement("ul");
+      facts.className = "plan-facts";
+      var rows = [
+        "Plan " + money(e.platformCost),
+        e.extraSeats > 0 && e.plan.extraSeat !== null
+          ? e.extraSeats + " extra " + (e.extraSeats===1?"user ":"users ") + money(e.seatCost)
+          : e.plan.seats + " users included" + (e.plan.extraSeat === null ? ", no extras possible" : ""),
+        "Messages " + money(e.msgCost) + " at " + rateStr(e.rates.marketing) + " marketing",
+        e.trigPacks > 0
+          ? "Trigger top-ups " + money(e.trigPacks * CONFIG.triggerPack.price)
+          : count(e.plan.triggers) + " triggers, enough for you"
+      ];
+      rows.forEach(function(r){ var li = document.createElement("li"); li.textContent = r; facts.appendChild(li); });
+      card.appendChild(facts);
+
+      if (!e.eligible){
+        e.reasons.forEach(function(r){
+          var p = document.createElement("p"); p.className = "plan-why"; p.textContent = r; card.appendChild(p);
+        });
+      }
+      wrap.appendChild(card);
+    });
+  }
+
+  function renderRateTables(pick){
+    $("rateCountryLabel").textContent = COUNTRIES[CONFIG.country].n;
+
+    var body = $("rateBody");
+    body.innerHTML = "";
+    CATS.forEach(function(cat){
+      var tr = document.createElement("tr");
+      var cells = '<td><i class="swatch" style="display:inline-block;background:var('+CAT_META[cat].colorVar+')"></i> ' +
+                  CAT_META[cat].label.replace(" messages","") + '</td>';
+      PLAN_ORDER.forEach(function(pk){
+        cells += '<td class="num"><input class="rateinput" type="number" min="0" step="0.00001" ' +
+                 'data-rate="'+cat+'" data-plankey="'+pk+'" value="'+CONFIG.rates[pk][cat]+'" ' +
+                 'aria-label="'+CAT_META[cat].label+' rate on '+CONFIG.plans[pk].label+'"></td>';
+      });
+      cells += '<td class="num">' + count(pick.volumes[cat]) + '</td>';
+      tr.innerHTML = cells;
+      body.appendChild(tr);
+    });
+
+    var pb = $("planPriceBody");
+    pb.innerHTML = "";
+    PLAN_ORDER.forEach(function(k){
+      var p = CONFIG.plans[k];
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td>' + p.label + ' plan</td>' +
+        '<td class="num"><input class="rateinput" type="number" min="0" step="1" data-plan="'+k+'" data-cycle="annual" value="'+p.annual+'" aria-label="'+p.label+' annual price"></td>' +
+        '<td class="num"><input class="rateinput" type="number" min="0" step="1" data-plan="'+k+'" data-cycle="monthly" value="'+p.monthly+'" aria-label="'+p.label+' monthly price"></td>';
+      pb.appendChild(tr);
+    });
+    var singles = [
+      ["seat:pro",   "Extra user, Pro",                 CONFIG.plans.pro.extraSeat],
+      ["seat:business","Extra user, Business",          CONFIG.plans.business.extraSeat],
+      ["extra:trigger_pack_price","1,000 automation triggers", CONFIG.triggerPack.price],
+      ["extra:ai_pack_price","1,000 AI Co-pilot credits", CONFIG.aiPack.price],
+      ["extra:shopify","Shopify integration ($4.99)",   CONFIG.shopify],
+      ["extra:extra_number","Extra WhatsApp number",    CONFIG.extraNumber]
+    ];
+    singles.forEach(function(x){
+      var parts = x[0].split(":");
+      var attr = parts[0] === "seat" ? 'data-seat="'+parts[1]+'"' : 'data-extra="'+parts[1]+'"';
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td>' + x[1] + '</td>' +
+        '<td class="num" colspan="2"><input class="rateinput" type="number" min="0" step="1" ' + attr +
+        ' value="'+x[2]+'" aria-label="'+x[1]+'"></td>';
+      pb.appendChild(tr);
+    });
+  }
+
+  /* ---------------------- wiring ---------------------- */
+  function pair(rangeId, numId, key, opts){
+    opts = opts || {};
+    var r = $(rangeId), n = $(numId);
+    function set(v, from){
+      v = Math.max(0, isFinite(v) ? v : 0);
+      if (opts.min !== undefined) v = Math.max(opts.min, v);
+      if (opts.max !== undefined) v = Math.min(opts.max, v);
+      state[key] = v;
+      if (from !== "range") r.value = Math.min(v, Number(r.max));
+      if (from !== "num") n.value = v;
+      render();
+    }
+    r.addEventListener("input", function(){ set(Number(r.value), "range"); });
+    n.addEventListener("input", function(){ set(Number(n.value), "num"); });
+    return function(v){ set(v); };
+  }
+
+  var setMkt    = pair("mktRange","mktNum","mkt");
+  var setUtil   = pair("utilRange","utilNum","util");
+  var setAuth   = pair("authRange","authNum","auth");
+  pair("freeWindowRange","freeWindow","freeWindow",{max:100});
+  var setAgents = pair("agentsRange","agentsNum","agents",{min:1});
+  var setTrig   = pair("trigRange","trigNum","triggers");
+  pair("aiRange","aiNum","aiCredits");
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-usecase]"), function(btn){
+    btn.addEventListener("click", function(){
+      Array.prototype.forEach.call(document.querySelectorAll("[data-usecase]"), function(b){
+        b.setAttribute("aria-pressed", String(b === btn));
+      });
+      state.useCase = btn.dataset.usecase;
+      var p = PRESETS[state.useCase];
+      setMkt(p.mkt); setUtil(p.util); setAuth(p.auth); setAgents(p.agents); setTrig(p.trig);
+      $("needAdvanced").checked = p.advanced;
+      state.needAdvanced = p.advanced;
+      render();
+    });
+  });
+
+  $("needAdvanced").addEventListener("change", function(){ state.needAdvanced = this.checked; render(); });
+  $("needShopify").addEventListener("change", function(){ state.needShopify = this.checked; render(); });
+  $("needMulti").addEventListener("change", function(){
+    state.needMulti = this.checked;
+    $("extraNumWrap").style.display = this.checked ? "block" : "none";
+    render();
+  });
+  $("extraNumbers").addEventListener("input", function(){
+    state.extraNumbers = Math.max(0, Number(this.value) || 0); render();
+  });
+
+  $("cycleAnnual").addEventListener("click", function(){ setCycle("annual"); });
+  $("cycleMonthly").addEventListener("click", function(){ setCycle("monthly"); });
+  function setCycle(c){
+    state.cycle = c;
+    $("cycleAnnual").setAttribute("aria-pressed", String(c === "annual"));
+    $("cycleMonthly").setAttribute("aria-pressed", String(c === "monthly"));
+    render();
+  }
+
+  // country picker
+  (function(){
+    var sel = $("country");
+    Object.keys(COUNTRIES).forEach(function(iso){
+      var o = document.createElement("option");
+      o.value = iso; o.textContent = COUNTRIES[iso].n;
+      sel.appendChild(o);
+    });
+    sel.value = "IN";
+    sel.addEventListener("change", function(){
+      applyCountry(this.value);
+      showStatus("ok","Repriced for " + COUNTRIES[this.value].n + ". Business still uses Pro rates.");
+      render();
+    });
+  })();
+
+  // live-edited rates and prices
+  document.addEventListener("input", function(ev){
+    var el = ev.target;
+    if (!el.classList || !el.classList.contains("rateinput")) return;
+    var v = Number(el.value);
+    if (!isFinite(v) || v < 0) return;
+    if (el.dataset.rate){ CONFIG.rates[el.dataset.plankey][el.dataset.rate] = v; }
+    else if (el.dataset.plan){ CONFIG.plans[el.dataset.plan][el.dataset.cycle] = v; }
+    else if (el.dataset.seat){ CONFIG.plans[el.dataset.seat].extraSeat = v; }
+    else if (el.dataset.extra){
+      if (el.dataset.extra === "trigger_pack_price") CONFIG.triggerPack.price = v;
+      if (el.dataset.extra === "ai_pack_price") CONFIG.aiPack.price = v;
+      if (el.dataset.extra === "shopify") CONFIG.shopify = v;
+      if (el.dataset.extra === "extra_number") CONFIG.extraNumber = v;
+    } else return;
+    softRender(el);
+  });
+
+  // re-render without stealing focus from the field being typed in
+  function softRender(activeEl){
+    var d = activeEl.dataset;
+    var selector =
+      d.rate  ? '[data-rate="'+d.rate+'"][data-plankey="'+d.plankey+'"]' :
+      d.plan  ? '[data-plan="'+d.plan+'"][data-cycle="'+d.cycle+'"]' :
+      d.seat  ? '[data-seat="'+d.seat+'"]' :
+      d.extra ? '[data-extra="'+d.extra+'"]' : null;
+    var caret = activeEl.selectionStart;
+    render();
+    var again = selector ? document.querySelector(selector) : null;
+    if (again){
+      again.focus();
+      try { again.setSelectionRange(caret, caret); } catch(e){}
+    }
+  }
+
+  /* ---------------------- CSV loading ---------------------- */
+  var KEY_MAP = {
+    growth_annual:   function(v){ CONFIG.plans.growth.annual = v; },
+    growth_monthly:  function(v){ CONFIG.plans.growth.monthly = v; },
+    pro_annual:      function(v){ CONFIG.plans.pro.annual = v; },
+    pro_monthly:     function(v){ CONFIG.plans.pro.monthly = v; },
+    business_annual: function(v){ CONFIG.plans.business.annual = v; },
+    business_monthly:function(v){ CONFIG.plans.business.monthly = v; },
+    pro_extra_seat:  function(v){ CONFIG.plans.pro.extraSeat = v; },
+    business_extra_seat: function(v){ CONFIG.plans.business.extraSeat = v; },
+    growth_seats:    function(v){ CONFIG.plans.growth.seats = v; },
+    pro_seats:       function(v){ CONFIG.plans.pro.seats = v; },
+    business_seats:  function(v){ CONFIG.plans.business.seats = v; },
+    growth_triggers: function(v){ CONFIG.plans.growth.triggers = v; },
+    pro_triggers:    function(v){ CONFIG.plans.pro.triggers = v; },
+    business_triggers:function(v){ CONFIG.plans.business.triggers = v; },
+    growth_ai_credits:  function(v){ CONFIG.plans.growth.aiCredits = v; },
+    pro_ai_credits:     function(v){ CONFIG.plans.pro.aiCredits = v; },
+    business_ai_credits:function(v){ CONFIG.plans.business.aiCredits = v; },
+    growth_broadcast_cap: function(v){ CONFIG.plans.growth.broadcastCap = v; },
+    trigger_pack_size: function(v){ CONFIG.triggerPack.size = v; },
+    trigger_pack_price:function(v){ CONFIG.triggerPack.price = v; },
+    ai_pack_size:      function(v){ CONFIG.aiPack.size = v; },
+    ai_pack_price:     function(v){ CONFIG.aiPack.price = v; },
+    shopify:           function(v){ CONFIG.shopify = v; },
+    extra_number:      function(v){ CONFIG.extraNumber = v; }
+  };
+  // plan-scoped rate keys, e.g. pro_marketing
+  PLAN_ORDER.forEach(function(pk){
+    CATS.forEach(function(cat){
+      KEY_MAP[pk + "_" + cat] = function(v){ CONFIG.rates[pk][cat] = v; };
+    });
+  });
+  // bare category names apply to all three plans
+  var CATEGORY_ALIASES = {
+    marketing:"marketing", promotional:"marketing", promotion:"marketing",
+    utility:"utility", transactional:"utility",
+    authentication:"authentication", auth:"authentication", otp:"authentication"
+  };
+
+  function parseCSV(text){
+    var applied = [], ignored = [];
+    text.replace(/\r/g,"").split("\n").forEach(function(raw){
+      var line = raw.trim();
+      if (!line) return;
+      var cells = line.split(",").map(function(c){ return c.trim().replace(/^"|"$/g,""); });
+      var k = cells[0].toLowerCase().replace(/\s+/g,"_");
+      if (k === "category" || k === "key" || k === "item" || k === "message_category" || k === "line") return;
+      var num = parseFloat(String(cells[1]).replace(/[₹,\s]/g,""));
+      if (!isFinite(num)){ ignored.push(cells[0] + " (no number in the second column)"); return; }
+      if (KEY_MAP[k]){ KEY_MAP[k](num); applied.push(k + " = " + num); return; }
+      var cat = CATEGORY_ALIASES[k];
+      if (cat){
+        PLAN_ORDER.forEach(function(pk){ CONFIG.rates[pk][cat] = num; });
+        applied.push(cat + " = " + rateStr(num) + " on all plans");
+        return;
+      }
+      ignored.push(cells[0]);
+    });
+    return { applied:applied, ignored:ignored };
+  }
+
+  function loadText(text){
+    var res;
+    try { res = parseCSV(text); }
+    catch(e){ return showStatus("err","Couldn't read that file. Save it as plain CSV and try again."); }
+
+    if (!res.applied.length){
+      return showStatus("err","Nothing was applied. Each row needs a name in the first column and a number in the second, like  marketing,1.03572");
+    }
+    render();
+    var msg = "Applied " + res.applied.length + " " + (res.applied.length===1?"value":"values") + ": " + res.applied.join("; ") + ".";
+    if (res.ignored.length) msg += "\nNot recognised, left alone: " + res.ignored.join(", ") + ".";
+    showStatus("ok", msg);
+  }
+
+  function showStatus(kind, msg){
+    var s = $("status");
+    s.className = "status " + kind;
+    s.textContent = msg;
+  }
+
+  function readFile(file){
+    if (!file) return;
+    if (!/\.csv$/i.test(file.name) && file.type !== "text/csv"){
+      return showStatus("err","That's not a CSV. Export the rate card as CSV and drop it in again.");
+    }
+    var fr = new FileReader();
+    fr.onload = function(){ loadText(String(fr.result)); };
+    fr.onerror = function(){ showStatus("err","The file couldn't be read. Try re-saving it."); };
+    fr.readAsText(file);
+  }
+
+  $("file").addEventListener("change", function(){ readFile(this.files[0]); });
+  var drop = $("drop");
+  ["dragenter","dragover"].forEach(function(ev){
+    drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add("over"); });
+  });
+  ["dragleave","drop"].forEach(function(ev){
+    drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove("over"); });
+  });
+  drop.addEventListener("drop", function(e){
+    if (e.dataTransfer && e.dataTransfer.files) readFile(e.dataTransfer.files[0]);
+  });
+
+  /* ---------------------- export ---------------------- */
+  $("printBtn").addEventListener("click", function(){ window.print(); });
+  $("copyBtn").addEventListener("click", function(){
+    var p = window.__pick;
+    var pad = function(name, amt){
+      var gap = Math.max(2, 54 - name.length);
+      return "  " + name + new Array(gap + 1).join(" ") + amt;
+    };
+    var out = [];
+    out.push("WATI COST ESTIMATE — " + new Date().toLocaleDateString("en-IN"));
+    out.push("Recommended plan: " + p.plan.label + (state.cycle === "annual" ? " (billed annually)" : " (billed monthly)"));
+    out.push("Messaging customers in: " + COUNTRIES[CONFIG.country].n);
+    out.push("");
+    out.push("Requirements");
+    out.push(pad("Marketing messages a month", count(state.mkt)));
+    out.push(pad("Utility messages a month", count(state.util) + (state.freeWindow ? " (" + state.freeWindow + "% inside the free service window)" : "")));
+    out.push(pad("Authentication messages a month", count(state.auth)));
+    out.push(pad("Team members with access", count(state.agents)));
+    out.push(pad("Automation triggers a month", count(state.triggers)));
+    if (state.aiCredits) out.push(pad("AI Co-pilot credits a month", count(state.aiCredits)));
+    out.push("");
+    out.push("Subscription — billed on your plan cycle");
+    p.subLines.forEach(function(l){ out.push(pad(l.name + (l.sub ? " (" + l.sub + ")" : ""), money(l.amount))); });
+    out.push(pad("Subscription subtotal", money(p.subCost)));
+    out.push("");
+    out.push("Messages — drawn from your prepaid wallet");
+    p.msgLines.forEach(function(l){ out.push(pad(l.name + (l.sub ? " (" + l.sub + ")" : ""), l.free ? "Free" : money(l.amount))); });
+    out.push(pad("Wallet subtotal", money(p.msgCost)));
+    out.push("");
+    out.push(pad("TOTAL PER MONTH", money(p.total)));
+    out.push(pad("Total per year", money(p.total * 12)));
+    out.push("");
+    if (!p.eligible) out.push("Note: no standard plan meets these requirements — this needs a custom quote.");
+    out.push("Service conversations, CTWA-initiated chats and utility replies inside the 24-hour");
+    out.push("service window are free and are not billed above.");
+    out.push("Rates from the Wati rate card effective 1 July 2026. Estimate only — confirm before quoting.");
+    var text = out.join("\n");
+
+    var btn = this;
+    function done(ok){
+      btn.textContent = ok ? "Copied" : "Copy failed";
+      setTimeout(function(){ btn.textContent = "Copy estimate"; }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, fallback);
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch(e){}
+      document.body.removeChild(ta);
+      done(ok);
+    }
+  });
+
+  applyCountry("IN");
+  render();
+})();
+</script>
+</body>
+</html>
